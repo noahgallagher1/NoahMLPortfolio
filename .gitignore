@@ -1,0 +1,13 @@
+# API key - NEVER commit this
+api/config.php
+
+# Python / ML artifacts
+*.pyc
+__pycache__/
+*.joblib
+*.pkl
+.env
+
+# OS files
+.DS_Store
+Thumbs.db

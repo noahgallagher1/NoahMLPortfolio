@@ -1,0 +1,30 @@
+RewriteEngine On
+
+# Route /api/gemini-chat to PHP proxy
+RewriteRule ^api/gemini-chat$ api/gemini-chat.php [L,QSA]
+
+# Block access to config file
+<Files "config.php">
+    Require all denied
+</Files>
+
+# Block access to dotfiles
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "DENY"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Cache control
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 5 minutes"
+    ExpiresByType application/javascript "access plus 5 minutes"
+    ExpiresByType image/png "access plus 1 day"
+    ExpiresByType image/svg+xml "access plus 1 day"
+</IfModule>

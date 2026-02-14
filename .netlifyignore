@@ -1,0 +1,5 @@
+# Exclude the ML project source code and heavy files from Netlify deploy
+# Only the static site files (index.html, css/, js/, assets/, netlify/) are needed
+customer-churn-prediction-main/
+data/
+.git/

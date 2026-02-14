@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction | Noah Gallagher - ML Portfolio</title>
+    <meta name="description" content="Interactive ML portfolio: Customer churn prediction with XGBoost, SHAP explainability, what-if simulations, and real-time AI chatbot. 93% recall, $367K annual savings.">
+    <meta name="author" content="Noah Gallagher">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F4CA;</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="mainNav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-logo">
+                <span class="nav-logo-icon"><i class="fas fa-chart-line"></i></span>
+                <span class="nav-logo-text">ChurnSense<span class="accent">AI</span></span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="#hero" class="nav-link active" data-section="hero">Overview</a>
+                <a href="#performance" class="nav-link" data-section="performance">Model Performance</a>
+                <a href="#features" class="nav-link" data-section="features">Feature Importance</a>
+                <a href="#simulator" class="nav-link" data-section="simulator">What-If Simulator</a>
+                <a href="#segments" class="nav-link" data-section="segments">Segments</a>
+                <a href="#about" class="nav-link" data-section="about">About</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-chat" id="chatToggle" aria-label="Open AI Assistant">
+                    <i class="fas fa-robot"></i>
+                    <span>Ask AI</span>
+                </button>
+                <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="section hero-section" id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badges">
+                    <span class="badge badge-blue"><i class="fas fa-brain"></i> XGBoost</span>
+                    <span class="badge badge-purple"><i class="fas fa-search"></i> Explainable AI</span>
+                    <span class="badge badge-green"><i class="fas fa-rocket"></i> End-to-End</span>
+                    <span class="badge badge-amber"><i class="fas fa-chart-bar"></i> Interactive</span>
+                </div>
+                <h1 class="hero-title">
+                    Predict Customer Churn<br>
+                    <span class="gradient-text">Before It Happens</span>
+                </h1>
+                <p class="hero-subtitle">
+                    An end-to-end machine learning system that identifies at-risk telecom customers
+                    with <strong>93% recall</strong>, enabling data-driven retention strategies
+                    projected to save <strong>$367K annually</strong>.
+                </p>
+                <div class="hero-actions">
+                    <a href="#simulator" class="btn btn-primary">
+                        <i class="fas fa-flask"></i> Try the Simulator
+                    </a>
+                    <a href="https://github.com/noahgallagher1/customer-churn-prediction" target="_blank" class="btn btn-outline">
+                        <i class="fab fa-github"></i> View Source
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card" data-animate>
+                    <div class="kpi-icon"><i class="fas fa-bullseye"></i></div>
+                    <div class="kpi-value" data-count="93" data-suffix="%">0%</div>
+                    <div class="kpi-label">Recall Rate</div>
+                    <div class="kpi-detail">Catches 93 out of 100 at-risk customers</div>
+                </div>
+                <div class="kpi-card" data-animate>
+                    <div class="kpi-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="kpi-value" data-count="367" data-prefix="$" data-suffix="K">$0K</div>
+                    <div class="kpi-label">Annual Savings</div>
+                    <div class="kpi-detail">Net benefit from targeted retention</div>
+                </div>
+                <div class="kpi-card" data-animate>
+                    <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="kpi-value" data-count="432" data-suffix="%">0%</div>
+                    <div class="kpi-label">Campaign ROI</div>
+                    <div class="kpi-detail">Return on retention investment</div>
+                </div>
+                <div class="kpi-card" data-animate>
+                    <div class="kpi-icon"><i class="fas fa-users"></i></div>
+                    <div class="kpi-value" data-count="7043" data-separator="true">0</div>
+                    <div class="kpi-label">Customers Analyzed</div>
+                    <div class="kpi-detail">IBM Telco Customer Dataset</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PROBLEM & SOLUTION ===== -->
+    <section class="section" id="problem-solution">
+        <div class="container">
+            <div class="two-col">
+                <div class="col-card">
+                    <div class="col-card-header">
+                        <span class="col-card-icon red"><i class="fas fa-exclamation-triangle"></i></span>
+                        <h3>The Churn Problem</h3>
+                    </div>
+                    <p>Telecom companies lose <strong>$1,500 per churned customer</strong> in lifetime value. With a 26.5% churn rate, that translates to nearly <strong>$2.8M in annual losses</strong> for a typical customer base.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-times-circle red-icon"></i> Month-to-month customers churn at 42%</li>
+                        <li><i class="fas fa-times-circle red-icon"></i> New customers (&lt;6 months) churn at 55%</li>
+                        <li><i class="fas fa-times-circle red-icon"></i> Electronic check users churn at 45%</li>
+                        <li><i class="fas fa-times-circle red-icon"></i> No early warning system in place</li>
+                    </ul>
+                </div>
+                <div class="col-card">
+                    <div class="col-card-header">
+                        <span class="col-card-icon green"><i class="fas fa-check-circle"></i></span>
+                        <h3>My ML Solution</h3>
+                    </div>
+                    <p>Built an end-to-end ML pipeline using <strong>XGBoost with SHAP explainability</strong> that identifies at-risk customers and recommends targeted interventions.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle green-icon"></i> 93% recall - catches nearly all churners</li>
+                        <li><i class="fas fa-check-circle green-icon"></i> SHAP explanations for every prediction</li>
+                        <li><i class="fas fa-check-circle green-icon"></i> 431% ROI on retention campaigns</li>
+                        <li><i class="fas fa-check-circle green-icon"></i> Actionable business recommendations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MODEL PERFORMANCE ===== -->
+    <section class="section" id="performance">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Model Evaluation</span>
+                <h2 class="section-title">Model Performance</h2>
+                <p class="section-subtitle">Comprehensive evaluation with confidence intervals, baseline comparisons, and statistical validation</p>
+            </div>
+
+            <!-- Model Metrics Cards -->
+            <div class="metrics-strip">
+                <div class="metric-pill">
+                    <span class="metric-pill-label">Accuracy</span>
+                    <span class="metric-pill-value">62.5%</span>
+                    <span class="metric-pill-ci">CI: [60.0%, 64.9%]</span>
+                </div>
+                <div class="metric-pill">
+                    <span class="metric-pill-label">Precision</span>
+                    <span class="metric-pill-value">40.9%</span>
+                    <span class="metric-pill-ci">CI: [37.6%, 44.3%]</span>
+                </div>
+                <div class="metric-pill highlight">
+                    <span class="metric-pill-label">Recall</span>
+                    <span class="metric-pill-value">93.1%</span>
+                    <span class="metric-pill-ci">CI: [90.3%, 95.6%]</span>
+                </div>
+                <div class="metric-pill">
+                    <span class="metric-pill-label">F1 Score</span>
+                    <span class="metric-pill-value">56.8%</span>
+                    <span class="metric-pill-ci">CI: [53.5%, 60.2%]</span>
+                </div>
+                <div class="metric-pill">
+                    <span class="metric-pill-label">ROC-AUC</span>
+                    <span class="metric-pill-value">0.838</span>
+                    <span class="metric-pill-ci">CI: [0.818, 0.860]</span>
+                </div>
+            </div>
+
+            <!-- Why optimized for recall -->
+            <div class="insight-callout">
+                <i class="fas fa-lightbulb"></i>
+                <div>
+                    <strong>Why optimize for recall?</strong> In churn prediction, missing an at-risk customer (false negative) is far more costly than a false alarm. A missed churner costs $1,500 in lost CLV, while a false positive only costs $100 for an unnecessary retention offer. This 15:1 cost ratio drives our recall-first strategy.
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3><i class="fas fa-th"></i> Confusion Matrix</h3>
+                    </div>
+                    <div class="chart-container" id="confusionMatrix"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3><i class="fas fa-chart-area"></i> ROC & PR Curves</h3>
+                        <div class="chart-toggle">
+                            <button class="toggle-btn active" data-curve="roc">ROC</button>
+                            <button class="toggle-btn" data-curve="pr">PR</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="rocPrCurve"></div>
+                </div>
+            </div>
+
+            <!-- Model Comparison -->
+            <div class="chart-card full-width">
+                <div class="chart-card-header">
+                    <h3><i class="fas fa-balance-scale"></i> Model Comparison</h3>
+                    <p class="chart-description">XGBoost vs baselines and alternative algorithms</p>
+                </div>
+                <div class="chart-container" id="modelComparison"></div>
+            </div>
+
+            <!-- Statistical Validation -->
+            <div class="stats-table-card">
+                <div class="chart-card-header">
+                    <h3><i class="fas fa-microscope"></i> Statistical Validation (Paired t-tests, 5-fold CV)</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Comparison</th>
+                                <th>Mean Diff</th>
+                                <th>t-statistic</th>
+                                <th>p-value</th>
+                                <th>Cohen's d</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>XGBoost vs Logistic Regression</td>
+                                <td>0.345</td>
+                                <td>63.57</td>
+                                <td>&lt; 0.001</td>
+                                <td>44.95</td>
+                                <td><span class="status-badge success">Significant</span></td>
+                            </tr>
+                            <tr>
+                                <td>XGBoost vs Random Forest</td>
+                                <td>0.002</td>
+                                <td>2.90</td>
+                                <td>0.044</td>
+                                <td>0.20</td>
+                                <td><span class="status-badge success">Significant</span></td>
+                            </tr>
+                            <tr>
+                                <td>XGBoost vs LightGBM</td>
+                                <td>0.002</td>
+                                <td>1.62</td>
+                                <td>0.181</td>
+                                <td>0.19</td>
+                                <td><span class="status-badge neutral">Not Significant</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ROI Analysis -->
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3><i class="fas fa-coins"></i> ROI Analysis</h3>
+                    </div>
+                    <div class="roi-summary">
+                        <div class="roi-item">
+                            <span class="roi-label">Total Campaigns</span>
+                            <span class="roi-value">851</span>
+                        </div>
+                        <div class="roi-item">
+                            <span class="roi-label">Campaign Cost</span>
+                            <span class="roi-value">$85,100</span>
+                        </div>
+                        <div class="roi-item">
+                            <span class="roi-label">Customers Saved</span>
+                            <span class="roi-value highlight-green">226</span>
+                        </div>
+                        <div class="roi-item">
+                            <span class="roi-label">Revenue Saved</span>
+                            <span class="roi-value highlight-green">$452,400</span>
+                        </div>
+                        <div class="roi-item big">
+                            <span class="roi-label">Net Benefit</span>
+                            <span class="roi-value highlight-green">$367,300</span>
+                        </div>
+                        <div class="roi-item big">
+                            <span class="roi-label">ROI</span>
+                            <span class="roi-value highlight-green">431.6%</span>
+                        </div>
+                    </div>
+                    <div class="roi-footnote">
+                        Assumes: CLV = $2,000 | Campaign cost = $100/customer | 65% success rate
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3><i class="fas fa-sliders-h"></i> ROI Sensitivity</h3>
+                    </div>
+                    <div class="chart-container" id="roiSensitivity"></div>
+                </div>
+            </div>
+
+            <!-- Confidence Intervals -->
+            <div class="chart-card full-width">
+                <div class="chart-card-header">
+                    <h3><i class="fas fa-chart-bar"></i> Bootstrap Confidence Intervals (1000 iterations)</h3>
+                </div>
+                <div class="chart-container" id="confidenceIntervals"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURE IMPORTANCE ===== -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Explainability</span>
+                <h2 class="section-title">Feature Importance & SHAP Analysis</h2>
+                <p class="section-subtitle">Understanding what drives churn predictions using SHAP (SHapley Additive exPlanations)</p>
+            </div>
+
+            <!-- Global Feature Importance -->
+            <div class="chart-card full-width">
+                <div class="chart-card-header">
+                    <h3><i class="fas fa-sort-amount-down"></i> Global Feature Importance (SHAP Values)</h3>
+                    <div class="chart-toggle">
+                        <button class="toggle-btn active" data-fi="shap">SHAP Values</button>
+                        <button class="toggle-btn" data-fi="model">Model Importance</button>
+                    </div>
+                </div>
+                <div class="chart-container tall" id="featureImportance"></div>
+            </div>
+
+            <!-- Key Insights -->
+            <div class="insight-grid">
+                <div class="insight-card">
+                    <div class="insight-icon red"><i class="fas fa-file-contract"></i></div>
+                    <h4>Contract Type</h4>
+                    <p>Two-year contracts reduce churn to <strong>3%</strong> vs <strong>42%</strong> for month-to-month. This is the single strongest predictor.</p>
+                    <div class="insight-bar">
+                        <div class="insight-bar-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon orange"><i class="fas fa-wifi"></i></div>
+                    <h4>Internet Service</h4>
+                    <p>Fiber optic users churn more, possibly due to <strong>higher expectations</strong> and pricing. No internet = lowest churn.</p>
+                    <div class="insight-bar">
+                        <div class="insight-bar-fill" style="width: 39%"></div>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon blue"><i class="fas fa-clock"></i></div>
+                    <h4>Customer Tenure</h4>
+                    <p>New customers (&lt;12 months) churn at <strong>48%</strong>. After 4+ years, churn drops to <strong>8%</strong>. Early engagement is critical.</p>
+                    <div class="insight-bar">
+                        <div class="insight-bar-fill" style="width: 22%"></div>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon purple"><i class="fas fa-credit-card"></i></div>
+                    <h4>Payment Method</h4>
+                    <p>Electronic check users churn at <strong>45%</strong>. Automatic payments correlate with lower churn (<strong>15%</strong>).</p>
+                    <div class="insight-bar">
+                        <div class="insight-bar-fill" style="width: 18%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHAP Summary Plot (static image) -->
+            <div class="chart-card full-width">
+                <div class="chart-card-header">
+                    <h3><i class="fas fa-chart-scatter"></i> SHAP Summary Plot</h3>
+                    <p class="chart-description">Each dot represents a customer. Color indicates feature value (red = high, blue = low). Position shows impact on churn prediction.</p>
+                </div>
+                <div class="shap-image-container">
+                    <img src="customer-churn-prediction-main/outputs/figures/shap_summary_plot.png" alt="SHAP Summary Plot" class="shap-image" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHAT-IF SIMULATOR ===== -->
+    <section class="section" id="simulator">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Interactive Demo</span>
+                <h2 class="section-title">What-If Churn Simulator</h2>
+                <p class="section-subtitle">Adjust customer attributes and see how churn risk changes in real-time</p>
+            </div>
+
+            <!-- Scenario Pills -->
+            <div class="scenario-pills">
+                <button class="scenario-pill active" data-scenario="new-subscriber">
+                    <i class="fas fa-user-plus"></i> New Subscriber
+                </button>
+                <button class="scenario-pill" data-scenario="loyal-customer">
+                    <i class="fas fa-heart"></i> Loyal Customer
+                </button>
+                <button class="scenario-pill" data-scenario="at-risk">
+                    <i class="fas fa-exclamation-triangle"></i> At-Risk User
+                </button>
+                <button class="scenario-pill" data-scenario="custom">
+                    <i class="fas fa-sliders-h"></i> Custom
+                </button>
+            </div>
+
+            <div class="simulator-layout">
+                <!-- Input Panel -->
+                <div class="sim-inputs">
+                    <h3 class="sim-panel-title"><i class="fas fa-user-cog"></i> Customer Profile</h3>
+
+                    <div class="sim-group">
+                        <label>Contract Type</label>
+                        <div class="sim-radio-group" data-field="contract">
+                            <button class="sim-radio active" data-value="Month-to-month">Month-to-month</button>
+                            <button class="sim-radio" data-value="One year">One year</button>
+                            <button class="sim-radio" data-value="Two year">Two year</button>
+                        </div>
+                    </div>
+
+                    <div class="sim-group">
+                        <label>Internet Service</label>
+                        <div class="sim-radio-group" data-field="internet">
+                            <button class="sim-radio" data-value="No">None</button>
+                            <button class="sim-radio" data-value="DSL">DSL</button>
+                            <button class="sim-radio active" data-value="Fiber optic">Fiber Optic</button>
+                        </div>
+                    </div>
+
+                    <div class="sim-group">
+                        <label>Tenure: <span class="sim-value" id="tenureValue">3 months</span></label>
+                        <input type="range" class="sim-slider" id="tenureSlider" min="0" max="72" value="3" data-field="tenure">
+                        <div class="sim-slider-labels"><span>0</span><span>72 months</span></div>
+                    </div>
+
+                    <div class="sim-group">
+                        <label>Monthly Charges: <span class="sim-value" id="chargesValue">$70.00</span></label>
+                        <input type="range" class="sim-slider" id="chargesSlider" min="18" max="120" value="70" data-field="monthlyCharges" step="0.5">
+                        <div class="sim-slider-labels"><span>$18</span><span>$120</span></div>
+                    </div>
+
+                    <div class="sim-group">
+                        <label>Payment Method</label>
+                        <select class="sim-select" data-field="paymentMethod">
+                            <option value="Electronic check">Electronic check</option>
+                            <option value="Mailed check">Mailed check</option>
+                            <option value="Bank transfer (automatic)">Bank transfer (auto)</option>
+                            <option value="Credit card (automatic)">Credit card (auto)</option>
+                        </select>
+                    </div>
+
+                    <div class="sim-toggles">
+                        <div class="sim-toggle">
+                            <label>Online Security</label>
+                            <button class="toggle-switch" data-field="onlineSecurity" data-value="No"><span class="toggle-knob"></span></button>
+                        </div>
+                        <div class="sim-toggle">
+                            <label>Tech Support</label>
+                            <button class="toggle-switch" data-field="techSupport" data-value="No"><span class="toggle-knob"></span></button>
+                        </div>
+                        <div class="sim-toggle">
+                            <label>Paperless Billing</label>
+                            <button class="toggle-switch active" data-field="paperlessBilling" data-value="Yes"><span class="toggle-knob"></span></button>
+                        </div>
+                        <div class="sim-toggle">
+                            <label>Senior Citizen</label>
+                            <button class="toggle-switch" data-field="seniorCitizen" data-value="No"><span class="toggle-knob"></span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Panel -->
+                <div class="sim-results">
+                    <div class="sim-gauge-container">
+                        <div class="chart-container" id="simGauge"></div>
+                    </div>
+                    <div class="sim-risk-label" id="simRiskLabel">
+                        <span class="risk-badge high">HIGH RISK</span>
+                    </div>
+                    <div class="sim-factors">
+                        <h4><i class="fas fa-arrow-trend-up"></i> Top Contributing Factors</h4>
+                        <div class="chart-container" id="simFactors"></div>
+                    </div>
+                    <div class="sim-recommendation" id="simRecommendation">
+                        <div class="rec-header"><i class="fas fa-lightbulb"></i> Recommended Action</div>
+                        <div class="rec-text">Offer a discounted annual contract with bundled online security to reduce churn risk by an estimated 35%.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SEGMENT ANALYSIS ===== -->
+    <section class="section" id="segments">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Deep Dive</span>
+                <h2 class="section-title">Segment Analysis</h2>
+                <p class="section-subtitle">Model performance and churn patterns across customer segments</p>
+            </div>
+
+            <!-- Segment Selector -->
+            <div class="segment-tabs">
+                <button class="segment-tab active" data-segment="contract">Contract Type</button>
+                <button class="segment-tab" data-segment="tenure">Tenure</button>
+                <button class="segment-tab" data-segment="charges">Monthly Charges</button>
+                <button class="segment-tab" data-segment="demographics">Demographics</button>
+            </div>
+
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Churn Rate by Segment</h3>
+                    </div>
+                    <div class="chart-container" id="segmentChurnRate"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3><i class="fas fa-tasks"></i> Model F1 Score by Segment</h3>
+                    </div>
+                    <div class="chart-container" id="segmentF1"></div>
+                </div>
+            </div>
+
+            <!-- Segment Detail Table -->
+            <div class="stats-table-card">
+                <div class="chart-card-header">
+                    <h3><i class="fas fa-table"></i> Segment Performance Detail</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table" id="segmentTable">
+                        <thead>
+                            <tr>
+                                <th>Segment</th>
+                                <th>N</th>
+                                <th>Churn Rate</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1</th>
+                                <th>FPR</th>
+                            </tr>
+                        </thead>
+                        <tbody id="segmentTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TECH & METHODOLOGY ===== -->
+    <section class="section" id="methodology">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Under the Hood</span>
+                <h2 class="section-title">Technical Approach</h2>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-database"></i></div>
+                    <h4>Data & Features</h4>
+                    <ul>
+                        <li>IBM Telco dataset (7,043 customers)</li>
+                        <li>21 raw features &rarr; 36 engineered</li>
+                        <li>Tenure bins, risk scores, ratios</li>
+                        <li>SMOTE oversampling for class balance</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-brain"></i></div>
+                    <h4>Model & Training</h4>
+                    <ul>
+                        <li>XGBoost (best recall among 4 models)</li>
+                        <li>RandomizedSearchCV (20 iterations)</li>
+                        <li>5-fold stratified cross-validation</li>
+                        <li>Optimized for recall (cost-sensitive)</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-search"></i></div>
+                    <h4>Explainability</h4>
+                    <ul>
+                        <li>SHAP TreeExplainer for XGBoost</li>
+                        <li>Global + per-prediction explanations</li>
+                        <li>Feature dependence analysis</li>
+                        <li>Business-friendly insight generation</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-cogs"></i></div>
+                    <h4>Engineering</h4>
+                    <ul>
+                        <li>Modular Python pipeline (src/)</li>
+                        <li>Comprehensive logging & error handling</li>
+                        <li>Type hints + Google-style docstrings</li>
+                        <li>Static site + Netlify Functions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tech Stack Tags -->
+            <div class="stack-tags">
+                <span class="stack-tag">Python</span>
+                <span class="stack-tag">XGBoost</span>
+                <span class="stack-tag">scikit-learn</span>
+                <span class="stack-tag">SHAP</span>
+                <span class="stack-tag">Pandas</span>
+                <span class="stack-tag">Plotly</span>
+                <span class="stack-tag">SMOTE</span>
+                <span class="stack-tag">HTML/CSS/JS</span>
+                <span class="stack-tag">Netlify Functions</span>
+                <span class="stack-tag">Gemini API</span>
+            </div>
+
+            <!-- Model Version Note -->
+            <div class="model-version">
+                <i class="fas fa-code-branch"></i> Model v1.0 | Trained on IBM Telco dataset | XGBoost with 36 engineered features | Last updated Nov 2025
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ABOUT ===== -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">About</span>
+                <h2 class="section-title">About This Project</h2>
+            </div>
+            <div class="about-layout">
+                <div class="about-text">
+                    <p>This project demonstrates an end-to-end machine learning workflow: from data exploration and feature engineering through model training, evaluation, and deployment as an interactive portfolio piece.</p>
+                    <p>The goal was not just to build a model, but to tell a clear <strong>business story</strong>: who is churning, why, and what actionable steps reduce risk &mdash; backed by rigorous statistical validation and transparent model explanations.</p>
+                    <div class="about-links">
+                        <a href="https://github.com/noahgallagher1/customer-churn-prediction" target="_blank" class="btn btn-outline"><i class="fab fa-github"></i> GitHub Repo</a>
+                        <a href="https://linkedin.com/in/noahgallagher" target="_blank" class="btn btn-outline"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                    </div>
+                </div>
+                <div class="about-outcomes">
+                    <h4>Key Outcomes</h4>
+                    <div class="outcome-item">
+                        <span class="outcome-metric">93%</span>
+                        <span class="outcome-text">of at-risk customers correctly identified</span>
+                    </div>
+                    <div class="outcome-item">
+                        <span class="outcome-metric">$367K</span>
+                        <span class="outcome-text">estimated annual savings from targeted retention</span>
+                    </div>
+                    <div class="outcome-item">
+                        <span class="outcome-metric">432%</span>
+                        <span class="outcome-text">ROI on retention campaigns</span>
+                    </div>
+                    <div class="outcome-item">
+                        <span class="outcome-metric">4</span>
+                        <span class="outcome-text">models compared with statistical validation</span>
+                    </div>
+                    <p class="outcome-note">Note: Business impact metrics are based on standard industry CLV assumptions applied to the IBM Telco sample dataset.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <p>&copy; 2025 Noah Gallagher. Built as an ML portfolio project.</p>
+                <div class="footer-links">
+                    <a href="https://github.com/noahgallagher1" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://linkedin.com/in/noahgallagher" target="_blank"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== CHATBOT ===== -->
+    <div class="chatbot-panel" id="chatbotPanel">
+        <div class="chatbot-header">
+            <div class="chatbot-header-left">
+                <i class="fas fa-robot"></i>
+                <span>ChurnSense AI Assistant</span>
+            </div>
+            <button class="chatbot-close" id="chatbotClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chatbot-body" id="chatbotBody">
+            <div class="chat-message bot">
+                <div class="chat-avatar"><i class="fas fa-robot"></i></div>
+                <div class="chat-bubble">
+                    Hi! I'm the ChurnSense AI assistant, powered by Google Gemini. I can answer questions about this project &mdash; the model, methodology, data, results, and business impact. What would you like to know?
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-footer">
+            <div class="chat-suggestions">
+                <button class="chat-suggestion" data-q="What model did you use and why?">What model was used?</button>
+                <button class="chat-suggestion" data-q="What are the top churn drivers?">Top churn drivers?</button>
+                <button class="chat-suggestion" data-q="Explain the ROI analysis">ROI analysis?</button>
+            </div>
+            <form class="chat-input-form" id="chatForm">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask about the project..." autocomplete="off">
+                <button type="submit" class="chat-send" id="chatSend"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/simulator.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
